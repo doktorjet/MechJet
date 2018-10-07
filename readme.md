@@ -13,7 +13,7 @@ Deorbits from LKO at `L` longitude (default 174.7) and stage till stage 0 when i
 _Compilation recommended._  
 **Dependencies:** `lib.ks` _(GUI/stat.ks removed for now)_
 
-Program to execute the next maneuer node. Optional parameter sets threshold for maneuer dV (default 0.1 m/s).
+Program to execute the next maneuver node. Optional parameter sets threshold for maneuver dV (default 0.1 m/s).
 
 ***
 ### launch.ks (%ORB, %INC, %TSH, %PLM, %DN)
@@ -25,7 +25,7 @@ Launch to target orbital plane is only possible now via _GUI/gui_launch.ks_.
 
 **Parameters:**  
 `ORB` - Wanted orbit height (km), default 90.  
-`INC` - Wanted orbit incination, default  0.  
+`INC` - Wanted orbit inclination, default  0.  
 `TSH` - Trajectory Sharpness, default 0.5 (it is MechJeb's 50).  
 `PLM` - Final pitch limiter, default 0.  
 `DN` - Start at Descending Node, default False.  
@@ -60,7 +60,7 @@ Makeshift mission manager. Will clean vessel disk and load files needed.
 _No compilation needed.  
 No dependencies._
 
-Mostly a wrapper around other programs to perform a rendevzous sequence. Does not use iterative calculations like "Lambert solver".
+Mostly a wrapper around other programs to perform a rendezvous sequence. Does not use iterative calculations like "Lambert solver".
 Parameter `DST` is wanted final distance from target, defaults to 80 (though it's most likely to end at 100-160).
 
 ***
@@ -82,15 +82,15 @@ Pre-launch GUI for selecting MechJeb-like launch parameters.
 _Compilation needed?  
 No dependencies._
 
-Supplementary GUI to be runned from _launch.ks_ and _exec.ks_. Shows some flight parameters. 
-Removed from code temporarily. MJ or KER are much better as displaing things.
+Supplementary GUI to be ran from _launch.ks_ and _exec.ks_. Shows some flight parameters. 
+Removed from code temporarily. MJ or KER are much better as displaying things.
 
 ***
 ### MP/mp_altin.ks (ALT, T)
 _No compilation needed.  
 No dependencies._
 
-Creates a maneuver node in T seconds fron now, setting an ALT orbital height in opposite node.
+Creates a maneuver node in T seconds from now, setting an ALT orbital height in opposite node.
 
 **Examples:**  
 `run mp_altin(SHIP:APOAPSIS,ETA:APOAPSIS).` - Circularize at Apoapsis.  
@@ -111,7 +111,7 @@ _No compilation needed._
 **Dependencies:** _lib.ks_
 
 If target selected - creates a maneuver node to match target inclination.  
-In taget is not selected - must set `INC` parameter for inclination wanted.
+In target is not selected - must set `INC` parameter for inclination wanted.
 
 **Examples:**  
 `RUN mp_inc(90).` - Create a node to make a polar orbit.  
@@ -122,5 +122,5 @@ In taget is not selected - must set `INC` parameter for inclination wanted.
 _Compilation needed?  
 No dependencies._
 
-Creates a maneuer node for bringind orbit periapsis over the landing site with `TLAT,TLNG` coordinates and lowering it to `PE` (default 20000 m).  
+Creates a maneuver node for bringing orbit periapsis over the landing site with `TLAT,TLNG` coordinates and lowering it to `PE` (default 20000 m).  
 Idea of this maneuver © [TheGreatFez](https://github.com/TheGreatFez).
