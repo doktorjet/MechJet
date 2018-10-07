@@ -6,7 +6,7 @@
 _No compilation needed._  
 **Dependencies:** `lib.ks`
 
-Deorbits from LKO at L longitude (default 174.7) and stage till stage 0 when in atmosphere.
+Deorbits from LKO at `L` longitude (default 174.7) and stage till stage 0 when in atmosphere.
 
 ***
 ### exec.ks (%THR)
@@ -24,7 +24,7 @@ Launch to orbit program with "MechJeb Classic" trajectory. Will also autostage b
 Launch to target orbital plane is only possible now via _GUI/gui_launch.ks_.
 
 **Parameters:**  
-:   `ORB` - Wanted orbit height (km), default 90.  
+`ORB` - Wanted orbit height (km), default 90.  
 `INC` - Wanted orbit incination, default  0.  
 `TSH` - Trajectory Sharpness, default 0.5 (it is MechJeb's 50).  
 `PLM` - Final pitch limiter, default 0.  
@@ -36,7 +36,7 @@ _No compilation needed.
 No dependencies._
 
 **Functions:**  
-:   `POP(STRING)` - wrapper for standard HUD message.  
+`POP(STRING)` - wrapper for standard HUD message.  
 `MSG(STRING)` - standard HUD message with console echo.  
 `WRN(STRING)` - HUD warning with console echo.  
 `ERR(STRING)` - HUD error with console echo.  
@@ -71,7 +71,7 @@ No dependencies._
 Pre-launch GUI for selecting MechJeb-like launch parameters.
 
 **GUI elements:**  
-:   `ORB` - Wanted orbit height (km), defaults to 90.  
+`ORB` - Wanted orbit height (km), defaults to 90.  
 `INCL` - Wanted orbit inclination(°), defaults to 0.  
 `TS` - trajectory steepness, defaults to 0.5.  
 `FPit` - pitch at final part of pseudo-GT, defaults to 0.  
@@ -92,8 +92,8 @@ No dependencies._
 
 Creates a maneuver node in T seconds fron now, setting an ALT orbital height in opposite node.
 
-**Examples:**
-:   `run mp_altin(SHIP:APOAPSIS,ETA:APOAPSIS).` - Circularize at Apoapsis.  
+**Examples:**  
+`run mp_altin(SHIP:APOAPSIS,ETA:APOAPSIS).` - Circularize at Apoapsis.  
 `run mp_altin(SHIP:PERIAPSIS,ETA:PERIAPSIS).` - Circularize at Periapsis.  
 `run mp_altin(20000,TTLng(174.7)).` - Deorbit trajectory to start over 174.7 longitude and land near KSC. (Start longitude may vary, depending on vessel used).  
 
@@ -113,8 +113,8 @@ _No compilation needed._
 If target selected - creates a maneuver node to match target inclination.  
 In taget is not selected - must set `INC` parameter for inclination wanted.
 
-**Examples:**
-:   `RUN mp_inc(90).` - Create a node to make a polar orbit.  
+**Examples:**  
+`RUN mp_inc(90).` - Create a node to make a polar orbit.  
 `RUN ONCE lib. IF HASTARGET AND RInc(SHIP,TARGET)>0.5 {RUN mp_inc.}` - Load a lib for RInc function. If relative inclination is more than 0.5° - create a node to match inclination.
 
 ***
