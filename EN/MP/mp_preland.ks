@@ -7,7 +7,7 @@ function LOM_Vec {	// Landing Orbit Maneur idea © TheGreatFez, https://github.co
 parameter INC, PE, T.
 local VV to velocityat(ship,time:seconds + T):orbit.
 local PV to positionat(ship,time:seconds + T).
-local BV to -POSITIONAT(BODY,time:seconds + T).
+local BV to POSITIONAT(ship,time:seconds + T)-BODY:POSITION.
 local VC to VV*ANGLEAXIS(-INC,BV).
 local Rp to body:radius + PE.
 local Ra to 2*OBT:Semimajoraxis - Rp.

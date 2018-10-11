@@ -11,22 +11,22 @@ IF NOT AN {SET RL TO 180 - RL.}
 RETURN MOD(MOD(TGT:OBT:LAN + RL - BODY:ROTATIONANGLE+360,360) - LONGITUDE+360,360) / 360 * BODY:ROTATIONPERIOD.
 }
 
-LOCAL ttl IS GL:addlabel("<size=16><b>MechJet: Запуск</b></size>").
+LOCAL ttl IS GL:addlabel("<size=16><b>MechJet: Launch</b></size>").
 SET ttl:style:align to "center".
 LOCAL H1 IS GL:ADDHLAYOUT().
 LOCAL V1 IS H1:ADDVLAYOUT().
 LOCAL V2 IS H1:ADDVLAYOUT().
-LOCAL OL IS V1:addlabel("<b>ORB (км):</b>").
-LOCAL IL IS V1:addlabel("<b>INCL (°):</b>").
+LOCAL OL IS V1:addlabel("<b>ORB (km):</b>").
+LOCAL IL IS V1:addlabel("<b>INCL (В°):</b>").
 LOCAL TL IS V1:addlabel("<b>TS: 0.5</b>").
-LOCAL FL IS V1:addlabel("<b>FPit (°):</b>").
+LOCAL FL IS V1:addlabel("<b>FPit (В°):</b>").
 LOCAL DN TO V1:ADDCHECKBOX("DN",FALSE).
 
 LOCAL GL_OR TO V2:ADDTEXTFIELD("90").
 LOCAL GL_IN TO V2:ADDTEXTFIELD("0").
 LOCAL GL_TS TO V2:ADDHSLIDER(0.5,0.1,0.9).
 LOCAL GL_FP TO V2:ADDTEXTFIELD("0").
-LOCAL GL_LB IS GL:ADDBUTTON("Запуск").
+LOCAL GL_LB IS GL:ADDBUTTON("Launch").
 
 SET GL_TS:ONCHANGE TO {PARAMETER A. SET TL:TEXT TO "TS: "+ROUND(A,2):TOSTRING. }.
 

@@ -3,7 +3,7 @@ RUN ONCE lib.
 IF HASTARGET {
 until not hasnode {	if hasnode { remove nextnode. }	}
 LOCAL SSa is obt:semimajoraxis.
-IF PE > 0 {SET PE TO PE + TARGET:RADIUS}.
+IF PE > 0 {SET PE TO PE + TARGET:RADIUS.}.
 local TSa is target:obt:semimajoraxis - PE.
 local HSa is (SSa + TSa) / 2.
 local TT is constant:pi * SQRT(HSa^3/body:mu).

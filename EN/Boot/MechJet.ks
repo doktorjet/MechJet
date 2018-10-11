@@ -13,6 +13,10 @@ REBOOT.
 }
 ELSE {
 RUNPATH("0:/MechJet/prepare_to","orbital_stuff").
+IF HASTARGET {
+switch to 1. 
+run rndzvs. 
 }
 }
-ELSE {RUN ONCE "0:/MECHJET/lib". ERR("Don't have connection to KSC!").}
+}
+ELSE {RUN ONCE "0:/MECHJET/lib". ERR("No connection with KSC!").}

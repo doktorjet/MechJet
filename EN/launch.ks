@@ -1,12 +1,13 @@
 // MechJet Launcher v.1.0 of 2018.09.23 for KOS 1.1.5.2
-// © Dr.Jet CC BY-NC 3.0
+// Â© Dr.Jet CC BY-NC 3.0
 @lazyglobal OFF.
 // Parameters: Target orbit height (km), Target orbit incination, Trajectory Sharpness (0.5 is MechJeb's 50), Final pitch limiter, Start at Descending Node (boolean).
 PARAMETER ORB IS 90, INC IS 0, TSH IS 0.5, PLM IS 0, DN IS FALSE.
 SET ORB to ORB*1000.	// km -> m
+RUN ONCE lib.
 
 FUNCTION OGT {		// Calculating pseudo-gravity-turn parameters.
-LOCAL GP TO LIST(200,5000). // Defaults for vacuum.
+LOCAL GP TO LIST(200,10000). // Defaults for vacuum.
 IF BODY:ATM:EXISTS {
 	LOCAL X TO 0.
 	UNTIL X > BODY:ATM:HEIGHT or BODY:ATM:ALTITUDEPRESSURE(x) < 0.93 { SET X TO X+50. }
@@ -23,15 +24,9 @@ RETURN GP.
 
 FUNCTION MJAZ {	// Compensed launch azimuth
 PARAMETER I, AP, DN.
-	FUNCTION IFL {	// Launch angle from Latitude
-	PARAMETER I.
-	LOCAL C TO COS(I)/COS(LATITUDE).
-	IF ABS(C)>1 {WRN("Warning! Latitude of "+ROUND(LATITUDE,2)+"° is not optimal for launching to inclination of "+I+"°."). IF ABS(-180*FLOOR(MOD(360+I,360)/180)+MOD(360+I,180)) < 90 RETURN 90. ELSE RETURN 270.}
-	ELSE {LOCAL A TO ARCCOS(C). IF I<0 SET A TO -A. RETURN MOD(450-A,360).}
-	}
-LOCAL A IS I.
-IF DN SET A TO -I.
-LOCAL H TO IFL(A).
+IF ABS(LATITUDE) > ABS(I) WRN("Warning! Latitude of "+ROUND(LATITUDE,2)+"Â° is not optimal for launching to inclination of "+I+"Â°.").
+IF DN SET I TO -I.
+LOCAL H TO HFI(I,LATITUDE).
 LOCAL ov IS SQRT(BODY:MU/(BODY:RADIUS + AP)).	// Wanted orbital speed
 LOCAL NRT IS NORTH:VECTOR.
 LOCAL EST IS VCRS(UP:VECTOR, NRT).
@@ -42,11 +37,11 @@ IF VDOT(HV:NORMALIZED,DHV:NORMALIZED) < 0.9 {RETURN MOD(360+ARCTAN2(VDOT(HV,EST)
 RETURN MOD(360+ARCTAN2(VDOT(DHV,EST),VDOT(DHV,NRT)),360).
 }
 
-MSG("Calculating launch from " + BODY:NAME+ " to the circular orbit of "+ ORB/1000 + "km with " + INC +"° inclination.").
+MSG("Calculating launch from " + BODY:NAME+ " to the circular orbit of "+ ORB/1000 + "km with " + INC +"Â° inclination.").
 LOCAL LA TO MJAZ(INC,ORB,DN).
-MSG("Launch azimuth is set to " + ROUND(LA,2) + "°.").
+MSG("Launch azimuth is set to " + ROUND(LA,2) + "Â°.").
 LOCAL GP TO OGT().
-MSG("Pseudo-GT will start at " + ROUND(GP[0]/1000,2) + "km and end at  " + GP[1]/1000 + "km.").
+MSG("Turn will start at " + ROUND(GP[0]/1000,2) + "km and end at " + GP[1]/1000 + "km.").
 MSG("Trajectory steepness set to " + TSH +".").
 WAIT 1.
 SAS OFF.
