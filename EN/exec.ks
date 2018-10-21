@@ -13,11 +13,12 @@ IF HASNODE {
 		POP("Aligning to maneuver.").
 		WAIT UNTIL VANG(ND:DELTAV, FACING:VECTOR) < 1.
 		POP("Waiting for maneuver start.").
-		WARPTO (TIME:SECONDS + ND:ETA - BT - 10). WAIT UNTIL ND:ETA <= BT.
+		WARPTO (UT(ND:ETA) - BT - 10). WAIT UNTIL ND:ETA <= BT.
 		BURN({Return ND:DELTAV.}).
 		WAIT 1.
 		MSG("Maneuer executed!").
-		REMOVE ND.		
+		REMOVE ND.
+		UNLOCK ALL.
 		}
 	ELSE {ERR("Vessel has no thrust!").}
 	}

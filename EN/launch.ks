@@ -51,8 +51,7 @@ LOCK LV TO HEADING(LA,PIT).
 LOCK STEERING TO LV.
 LOCK THROTTLE to MIN(1,(ORB-ALT:APOAPSIS)/5000+0.05).
 MSG("Here we go!").
-STAGE.
-
+IF AVAILABLETHRUST = 0 STAGE.
 LOCAL PTR TO 0.8*AVAILABLETHRUST.
 WHEN AVAILABLETHRUST < PTR THEN {	// Autostaging
 WAIT UNTIL stage:ready.
@@ -88,14 +87,14 @@ IF BODY:ATM:EXISTS AND ALTITUDE < BODY:ATM:HEIGHT {	// Atmo exit.
 	}
 }
 // Stuff to do when reaching space.
-WAIT 2.
 PANELS ON. AG9 ON.
+//
 MSG("Circularizing.").
 RUN mp_altin(ORB,eta:apoapsis).
-WAIT 2.
-UNLOCK STEERING.
 run exec.
-IF HASTARGET AND ABS(RiNC(SHIP,TARGET))>0.2 {MSG("Correcting inclination."). RUN mp_inc. WAIT 1. RUN exec.}
+//IF HASTARGET AND ABS(RiNC(SHIP,TARGET))>0.2 {MSG("Correcting inclination."). RUN mp_inc. WAIT 1. RUN exec.}
 SAS ON.
 MSG("Set orbit reached.").
 CLEARGUIS().
+SSTATE(2).
+REBOOT.

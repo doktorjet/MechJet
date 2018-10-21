@@ -1,22 +1,20 @@
-@lazyglobal OFF.
-RUN ONCE lib.
-PARAMETER INC is FALSE.
+PARAMETER I,T IS FALSE.
+RUN ONCE LIB.
 for n in ALLNODES {remove n.}
-function mft {parameter a. LOCAL e IS OBT:eccentricity. if e < 0.001 return a. if e >= 1 { ERR("meanFromTrue("+round(a,2)+") with e=" + round(e,5)). return a.} set a to a*.5. set a to 2*arctan2(sqrt(1-e)*sin(a),sqrt(1+e)*cos(a)). return a - e * sin(a) * 180/constant:pi.}
-
-LOCAL TA IS 0. LOCAL DI IS 0.
-IF HASTARGET {local sp is ship:position-body:position. local sn is OrbN(SHIP). local ln is vcrs(OrbN(TARGET),sn). SET di TO Rinc(SHIP,TARGET). SET ta TO vang(sp, ln). if vang(vcrs(sp,ln),sn) < 90 set ta to -ta. SET ta TO ta + OBT:trueAnomaly.}
-ELSE IF INC {
-SET di TO INC-OBT:INCLINATION. 
-SET ta TO -OBT:argumentOfPeriapsis.}
-IF ABS(di) > 0.05 {
-set ta to MOD(360+ta,360). 
-LOCAL FUNCTION TTA {PARAMETER TA. RETURN TIME:SECONDS+MOD(360 + mft(ta) - mft(OBT:trueAnomaly),360) / 360 * OBT:period.}
-local v1 is velocityAt(ship,TTA(TA)):OBT:mag.
-LOCAL TT IS MOD(180+TA,360).
-LOCAL v2 is velocityAt(ship,TTA(TT)):OBT:mag.
-LOCAL T1 IS TTA(TA).
-IF v1 > V2 {SET V1 to V2. SET T1 to TTA(TT). SET di to -di.}
-add node(t1, 0, v1 * sin(di), v1 *(cos(di)-1)).
+FUNCTION V2I {
+PARAMETER I,T.
+LOCAL P IS POSITIONAT(SHIP,UT(T)). 
+LOCAL U IS (P-BODY:position):NORMALIZED.
+LOCAL L IS BODY:GEOPOSITIONOF(P):LAT.
+LOCAL D IS HFI(I,L).
+LOCAL AHV IS VXCL(U,VELOCITYAT(SHIP,UT(T)):ORBIT).
+LOCAL N IS VXCL(U, v(0,1,0)).
+LOCAL E IS VCRS(U,N).
+LOCAL NHV IS COS(D) * N.
+LOCAL EHV IS SIN(D) * E.
+IF VDOT(AHV,NHV) < 0 SET NHV to -NHV. IF D180(I) < 0 SET NHV to -NHV.
+LOCAL WHV IS AHV:MAG*(NHV+EHV):NORMALIZED.
+RETURN WHV - AHV.
 }
-ELSE MSG("Relative angle is negligibly small.").
+IF T <> FALSE VNODE(V2I(I,T),T).
+ELSE IF OBT:ECCENTRICITY<1{SET A TO ETA_AN(). SET D TO ETA_DN(). SET VA TO V2I(I,A). SET VD TO V2I(I,D). IF VA:MAG < VD:MAG VNODE(VA,A). ELSE VNODE(VD,D).} ELSE ERR("Must set time for this maneuver in hyperbolic trajectory.").

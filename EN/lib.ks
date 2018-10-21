@@ -12,32 +12,22 @@ FUNCTION SIGN{PARAMETER X. IF X<0 RETURN -1. IF X > 0 RETURN 1. RETURN 0.}
 FUNCTION CLAMP{PARAMETER A,X,Y. IF A < X RETURN X. IF A > Y RETURN Y. RETURN A.}
 FUNCTION D360 {PARAMETER A. RETURN MOD(3600+A,360).}
 FUNCTION D180 {PARAMETER A. RETURN -180*FLOOR(MOD(360+A,360)/180)+MOD(360+A,180).}
+GLOBAL r2d IS 180/constant:pi.
 //Orbital math
 FUNCTION HFI{PARAMETER I,L. LOCAL C TO COS(I)/COS(L). IF ABS(C)>1 {IF ABS(D180(I)) < 90 RETURN 90. ELSE RETURN 270.} ELSE {LOCAL A TO ARCCOS(C). IF I<0 SET A TO -A. RETURN D360(90-A).}}
 function OrbN{PARAMETER O IS SHIP. RETURN VCRS(O:BODY:POSITION - O:POSITION, O:VELOCITY:ORBIT):NORMALIZED.}
 function RInc{parameter A, B. RETURN VANG(OrbN(A), OrbN(B)).}
 function TTLng{PARAMETER L. LOCAL AS IS (360/OBT:PERIOD) - 360/BODY:ROTATIONPERIOD. LOCAL DL IS MOD(L + 360 - LONGITUDE, 360). IF DL < 0 {SET DL to DL + 360.} RETURN DL/AS.}
-
-
-FUNCTION AAN {LOCAL AFP IS VANG(VCRS(VELOCITY:ORBIT,VCRS(-BODY:POSITION,VELOCITY:ORBIT)),VCRS(ORbN(),ORbN(TARGET))). RETURN IIF(AFP < 90,AFP,360-AFP).}
-FUNCTION ETA_AN {RETURN ETA_TA(AAN()).}
-FUNCTION ETA_DN {RETURN ETA_TA(MOD(180+AAN(),360)).}
-
-FUNCTION ETA_EqAN {RETURN ETA_TA(360-OBT:ARGUMENTOFPERIAPSIS).}// ETA to equatorial AN 
-FUNCTION ETA_EqDN {IF OBT:ARGUMENTOFPERIAPSIS <= 180 RETURN ETA_TA(180-OBT:ARGUMENTOFPERIAPSIS). RETURN ETA_TA(520-OBT:ARGUMENTOFPERIAPSIS). }// ETA to equatorial DN 
-
-FUNCTION ETA_TA {PARAMETER TA. LOCAL T IS TMA(EA2MA(TA2EA(TA))). LOCAL N IS OBT:PERIOD - ETA:PERIAPSIS. IF N < T RETURN T-N. RETURN ETA:PERIAPSIS + T.}// ETA to true anomaly.
-FUNCTION R2TA {PARAMETER R. RETURN ARCCOS((-OBT:SEMIMAJORAXIS * OBT:ECCENTRICITY^2 + OBT:SEMIMAJORAXIS - R) / (OBT:ECCENTRICITY * R)).} // True anomaly at radius
-FUNCTION TMA {PARAMETER M. LOCAL tau is 360. LOCAL P is OBT:PERIOD. RETURN M*P/tau.}// Time at Mean Anomaly.
-FUNCTION EA2MA {PARAMETER E. RETURN E - OBT:ECCENTRICITY*sin(E).}// Convert Eccentric Anomaly to Mean Anomaly.
-FUNCTION TA2EA { // Convert True Anomaly to Eccentric Anomaly
-PARAMETER TA. LOCAL OE is OBT:ECCENTRICITY. SET TA TO D360(TA). LOCAL cosE IS (OE + COS(TA))/(1+OE*COS(TA)).
-IF OE<1{LOCAL sinE IS SQRT(1-cosE*cosE). IF TA > 180 SET sinE to -sinE. RETURN ARCTAN2(sinE,cosE).}// Elliptic
-ELSE {ERR("Can't calculate hyperbolic orbits."). RETURN FALSE.}
-}
+function ANDIR {parameter RN. LOCAL NV IS vcrs(body:position-orbit:position,velocity:orbit). return lookdirup(VCRS(NV,RN),NV).} // direction with vector=AN vector, up=normal
+function ETA_TA {parameter ta, O IS OBT. local CTA to O:trueanomaly. local OE to O:eccentricity. local EF to sqrt( (1-OE) / (1+OE) ). local CE to 2*arctan( EF * tan(CTA / 2) ). local NE to 2*arctan( EF * tan(ta / 2) ). local dt to sqrt( O:semimajoraxis^3 / O:body:mu ) * ((NE - CE)*constant:degtorad - OE * (sin(NE) - sin(CE))). until dt > 0 { set dt to dt + O:period. } return dt. }
+function ETA_AN {parameter RN IS V(0,1,0). local AN_NRM to ANDIR(RN). local ANvec to AN_NRM:vector. local taAN to arctan2( vdot(AN_NRM:upvector, vcrs(body:position, ANvec)), -vdot(body:position, ANvec) ) + orbit:trueanomaly. return ETA_TA(taAN).}
+function ETA_DN {parameter RN IS V(0,1,0). local DN_NRM to ANDIR(RN). local DNvec to -DN_NRM:vector. local taDN to arctan2( vdot(DN_NRM:upvector, vcrs(body:position, DNvec)), -vdot(body:position, DNvec) ) + orbit:trueanomaly. return ETA_TA(taDN).}
 //Utils
-FUNCTION VNODE{Parameter VC,T. SET T TO time:seconds+T. local P is velocityat(ship,T):orbit. local N is vcrs(P,positionat(ship,T)-BODY:POSITION). ADD NODE(T,vdot(VC,vcrs(N,P):normalized), vdot(VC,N:normalized), vdot(VC,P:normalized)).}
+FUNCTION UT{PARAMETER T IS 0. RETURN TIME:SECONDS+T.}
+FUNCTION VNODE{Parameter VC,T. SET T TO UT(T). local P is velocityat(ship,T):orbit. local N is vcrs(P,positionat(ship,T)-BODY:POSITION). ADD NODE(T,vdot(VC,vcrs(N,P):normalized), vdot(VC,N:normalized), vdot(VC,P:normalized)).}
 FUNCTION BURN{PARAMETER BV, THR IS 0.1. SAS OFF.
 LOCK steering to BV(). WAIT UNTIL VANG(BV(), FACING:VECTOR) < 0.5.
 LOCK THROTTLE to (1/(1+VANG(BV(),FACING:VECTOR)^2))*max(0.01,min(1,BV():MAG*MASS/SHIP:AVAILABLETHRUST)).
 WAIT UNTIL BV():MAG <= THR. UNLOCK THROTTLE. UNLOCK STEERING.}
+FUNCTION SSTATE {PARAMETER S. LOCAL FN IS "1:/state". IF EXISTS(FN) SET F TO OPEN(FN). ELSE SET F TO CREATE(FN). F:CLEAR().F:WRITE(S:TOSTRING()).}
+FUNCTION RSTATE {LOCAL FN IS "1:/state". IF EXISTS(FN) {SET F TO OPEN(FN). RETURN F:READALL():STRING:TONUMBER(-1).} ELSE RETURN -1.}
